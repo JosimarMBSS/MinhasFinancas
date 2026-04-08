@@ -95,7 +95,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Dados principais"
+                        android:text="Dados do lançamento"
                         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                         android:textStyle="bold" />
 
@@ -128,13 +128,16 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:hint="Valor"
+                            app:helperText="Ex.: 25,90"
                             app:prefixText="R$ ">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/input_amount"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="numberDecimal" />
+                                android:digits="0123456789,."
+                                android:inputType="numberDecimal"
+                                android:maxLines="1" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <Space

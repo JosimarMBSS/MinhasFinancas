@@ -23,20 +23,28 @@
     <color name="top_app_bar_bg">#0B5D56</color>
     <color name="top_app_bar_on">#FFFFFF</color>
     <color name="screen_section_bg">#EAF3F5</color>
-    <color name="report_header_bg">#123F5A</color>
-    <color name="report_header_on">#FFFFFF</color>
-    <color name="report_card_soft">#F2F7FB</color>
+
+    <color name="report_header_bg">#EAF4FB</color>
+    <color name="report_header_on">#1E3344</color>
+    <color name="report_card_soft">#F6FAFD</color>
+
     <color name="category_card_bg">#FFFFFF</color>
     <color name="category_type_bg">#EDF7F6</color>
     <color name="category_type_text">#0B5D56</color>
     <color name="category_state_text">#627483</color>
     <color name="transfer_blue">#2F6DF6</color>
-    <color name="search_hint">#9BA7B4</color>
+    <color name="search_hint">#BAC4CE</color>
     <color name="filter_surface">#E8EEF8</color>
     <color name="action_edit_bg">#E8F4FF</color>
     <color name="action_delete_bg">#FDECEC</color>
-    <color name="paid_card_bg">#ECFDF3</color>
-    <color name="paid_card_stroke">#B7E4C7</color>
+    <color name="paid_card_bg">#ECF8F0</color>
+    <color name="paid_card_stroke">#C6E5D0</color>
     <color name="pending_card_bg">#FFFFFF</color>
     <color name="pending_card_stroke">#D8E1E8</color>
+    <color name="report_share_bg">#DFF2EF</color>
+    <color name="report_share_icon">#0B5D56</color>
+    <color name="row_surface">#FFFFFF</color>
+    <color name="row_surface_paid">#F0FAF3</color>
+    <color name="row_divider">#E3EBF1</color>
+    <color name="row_subtle_text">#73808D</color>
 </resources>

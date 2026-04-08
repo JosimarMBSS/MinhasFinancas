@@ -48,6 +48,14 @@
                     android:text="Controle financeiro simples, focado em lançamentos, relatórios e exportação dos seus dados."
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textColor="@color/md_theme_onSurface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Desenvolvedor: Josimar Ferreira Soares"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="@color/totals_label" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

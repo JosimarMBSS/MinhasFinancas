@@ -82,6 +82,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
         void bind(TransactionListItem item) {
             binding.textTitle.setText(item.description != null && !item.description.isEmpty() ? item.description : item.title);
+            binding.textSubtitle.setText(DateUtils.isoToDisplay(item.transactionDate));
             binding.textAmount.setText(formattedAmount(item));
             binding.textAmount.setTextColor(Color.parseColor(colorForType(item.type)));
             binding.textStatus.setText(statusLabel(item));
@@ -89,13 +90,13 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             binding.textBadge.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorForType(item.type))));
 
             boolean isPaid = "PAID".equals(item.status);
-            binding.cardContent.setCardBackgroundColor(Color.parseColor(isPaid ? "#EEF8F0" : "#FFFFFF"));
-            binding.cardContent.setStrokeColor(Color.parseColor(isPaid ? "#C8E6CF" : "#D8E1E8"));
+            binding.cardContent.setCardBackgroundColor(Color.parseColor(isPaid ? "#F0FAF3" : "#FFFFFF"));
+            binding.cardContent.setStrokeColor(Color.parseColor(isPaid ? "#C6E5D0" : "#D8E1E8"));
 
             boolean expanded = inlineActions && item.id == expandedItemId;
             binding.layoutActions.setVisibility(inlineActions ? View.VISIBLE : View.GONE);
             binding.layoutActions.setAlpha(expanded ? 1f : 0f);
-            binding.cardContent.setTranslationX(expanded ? -dp(118) : 0f);
+            binding.cardContent.setTranslationX(expanded ? -dp(130) : 0f);
 
             binding.cardContent.setOnClickListener(v -> {
                 if (!inlineActions) {

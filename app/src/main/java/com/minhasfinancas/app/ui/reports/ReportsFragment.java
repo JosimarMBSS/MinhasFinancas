@@ -1,6 +1,7 @@
 package com.minhasfinancas.app.ui.reports;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
@@ -9,14 +10,15 @@ import android.os.Bundle;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.minhasfinancas.app.BuildConfig;
 import com.minhasfinancas.app.data.model.ReportFilter;
+import com.minhasfinancas.app.data.model.ReportSummary;
 import com.minhasfinancas.app.data.model.TransactionListItem;
 import com.minhasfinancas.app.data.repository.FinanceRepository;
 import com.minhasfinancas.app.databinding.FragmentReportsBinding;
@@ -27,7 +29,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.OutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +42,7 @@ public class ReportsFragment extends Fragment {
     private String currentTypeFilter = "ALL";
     private String currentStatusFilter = "ALL";
     private final List<TransactionListItem> currentItems = new ArrayList<>();
-    private ActivityResultLauncher<String> pdfLauncher;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        pdfLauncher = registerForActivityResult(new ActivityResultContracts.CreateDocument("application/pdf"), this::writePdfToUri);
-    }
+    private ReportSummary currentSummary = new ReportSummary();
 
     @Nullable
     @Override
@@ -64,7 +61,7 @@ public class ReportsFragment extends Fragment {
         binding.inputEndDate.setOnClickListener(v -> pickDate(false));
         binding.buttonTypeFilter.setOnClickListener(v -> showTypeMenu());
         binding.buttonStatusFilter.setOnClickListener(v -> showStatusMenu());
-        binding.buttonGeneratePdf.setOnClickListener(v -> pdfLauncher.launch("relatorio-minhas-financas.pdf"));
+        binding.buttonGeneratePdf.setOnClickListener(v -> sharePdf());
 
         updateFilterLabels();
         return binding.getRoot();
@@ -190,6 +187,7 @@ public class ReportsFragment extends Fragment {
                 binding.textCount.setText(visibleItems.size() + " item(ns)");
             });
             repo.getReportSummary(filter, summary -> {
+                currentSummary = summary;
                 binding.textIncomeTotal.setText(DateUtils.currency(summary.income));
                 binding.textExpenseTotal.setText(DateUtils.currency(summary.expense));
                 binding.textBalanceTotal.setText("Saldo: " + DateUtils.currency(summary.getBalance()));
@@ -198,67 +196,96 @@ public class ReportsFragment extends Fragment {
         });
     }
 
-    private void writePdfToUri(Uri uri) {
-        if (uri == null || getContext() == null) {
+    private void sharePdf() {
+        if (getContext() == null) {
             return;
         }
         if (currentItems.isEmpty()) {
-            Toast.makeText(requireContext(), "Não há dados para gerar o PDF.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Não há dados para compartilhar.", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        try {
+            File dir = new File(requireContext().getCacheDir(), "reports");
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File pdfFile = new File(dir, "relatorio-minhas-financas.pdf");
+            createPdf(pdfFile);
+
+            Uri uri = FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".fileprovider", pdfFile);
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("application/pdf");
+            intent.putExtra(Intent.EXTRA_STREAM, uri);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Relatório Minhas Finanças");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(intent, "Compartilhar PDF"));
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "Não foi possível gerar o PDF.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void createPdf(File outputFile) throws Exception {
         PdfDocument document = new PdfDocument();
         Paint titlePaint = new Paint();
         titlePaint.setTextSize(18f);
         titlePaint.setFakeBoldText(true);
 
+        Paint subtitlePaint = new Paint();
+        subtitlePaint.setTextSize(12f);
+
         Paint textPaint = new Paint();
-        textPaint.setTextSize(12f);
+        textPaint.setTextSize(11f);
 
         Paint linePaint = new Paint();
         linePaint.setStrokeWidth(1f);
 
         int pageWidth = 595;
         int pageHeight = 842;
-        int y = 40;
         int pageNumber = 1;
+        int y = 40;
+
         PdfDocument.Page page = document.startPage(new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber).create());
         android.graphics.Canvas canvas = page.getCanvas();
 
-        y = drawHeader(canvas, titlePaint, textPaint, linePaint, y);
+        y = drawHeader(canvas, titlePaint, subtitlePaint, textPaint, linePaint, y);
+
         for (TransactionListItem item : currentItems) {
             if (y > pageHeight - 60) {
                 document.finishPage(page);
                 pageNumber++;
                 page = document.startPage(new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber).create());
                 canvas = page.getCanvas();
-                y = drawHeader(canvas, titlePaint, textPaint, linePaint, 40);
+                y = drawHeader(canvas, titlePaint, subtitlePaint, textPaint, linePaint, 40);
             }
             String description = item.description != null && !item.description.trim().isEmpty() ? item.description : item.title;
-            canvas.drawText(description, 24, y, textPaint);
+            canvas.drawText(trim(description, 34), 24, y, textPaint);
             canvas.drawText(("INCOME".equals(item.type) ? "+ " : "- ") + DateUtils.currency(item.amount), 320, y, textPaint);
             canvas.drawText(reportStatus(item), 470, y, textPaint);
             y += 20;
         }
 
         document.finishPage(page);
-        try (OutputStream outputStream = requireContext().getContentResolver().openOutputStream(uri)) {
+        try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
             document.writeTo(outputStream);
-            Toast.makeText(requireContext(), "PDF gerado com sucesso.", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(requireContext(), "Não foi possível gerar o PDF.", Toast.LENGTH_SHORT).show();
         } finally {
             document.close();
         }
     }
 
-    private int drawHeader(android.graphics.Canvas canvas, Paint titlePaint, Paint textPaint, Paint linePaint, int startY) {
+    private int drawHeader(android.graphics.Canvas canvas, Paint titlePaint, Paint subtitlePaint, Paint textPaint, Paint linePaint, int startY) {
         int y = startY;
         canvas.drawText("Relatório - Minhas Finanças", 24, y, titlePaint);
         y += 20;
-        canvas.drawText("Período: " + textOf(binding.inputStartDate.getText()) + " até " + textOf(binding.inputEndDate.getText()), 24, y, textPaint);
-        y += 20;
-        canvas.drawText("Tipo: " + typeLabel() + " | Situação: " + statusLabel(), 24, y, textPaint);
+        canvas.drawText("Período: " + textOf(binding.inputStartDate.getText()) + " até " + textOf(binding.inputEndDate.getText()), 24, y, subtitlePaint);
+        y += 18;
+        canvas.drawText("Tipo: " + typeLabel() + " | Situação: " + statusLabel(), 24, y, subtitlePaint);
+        y += 24;
+        canvas.drawText("Resumo de totais", 24, y, subtitlePaint);
+        y += 18;
+        canvas.drawText("Receitas: " + DateUtils.currency(currentSummary.income), 24, y, textPaint);
+        canvas.drawText("Despesas: " + DateUtils.currency(currentSummary.expense), 220, y, textPaint);
+        canvas.drawText("Saldo: " + DateUtils.currency(currentSummary.getBalance()), 420, y, textPaint);
         y += 24;
         canvas.drawText("Descrição", 24, y, textPaint);
         canvas.drawText("Valor", 320, y, textPaint);
@@ -266,6 +293,13 @@ public class ReportsFragment extends Fragment {
         y += 6;
         canvas.drawLine(24, y, 560, y, linePaint);
         return y + 16;
+    }
+
+    private String trim(String text, int max) {
+        if (text == null) {
+            return "";
+        }
+        return text.length() > max ? text.substring(0, max - 1) + "…" : text;
     }
 
     private String typeLabel() {

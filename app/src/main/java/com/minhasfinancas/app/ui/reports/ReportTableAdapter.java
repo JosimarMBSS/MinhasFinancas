@@ -1,5 +1,6 @@
 package com.minhasfinancas.app.ui.reports;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -52,7 +53,9 @@ public class ReportTableAdapter extends RecyclerView.Adapter<ReportTableAdapter.
             String title = item.description != null && !item.description.trim().isEmpty() ? item.description : item.title;
             binding.textDescription.setText(title);
             binding.textAmount.setText(("INCOME".equals(item.type) ? "+ " : "- ") + DateUtils.currency(item.amount));
+            binding.textAmount.setTextColor(Color.parseColor("INCOME".equals(item.type) ? "#198754" : "#D9485F"));
             binding.textStatus.setText(statusLabel(item));
+            binding.getRoot().setBackgroundColor(Color.parseColor("PAID".equals(item.status) ? "#F0FAF3" : "#FFFFFF"));
         }
 
         private String statusLabel(TransactionListItem item) {

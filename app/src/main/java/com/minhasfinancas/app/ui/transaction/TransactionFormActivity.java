@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -110,6 +111,8 @@ public class TransactionFormActivity extends AppCompatActivity {
     }
 
     private void setupMasks() {
+        binding.inputAmount.setKeyListener(DigitsKeyListener.getInstance("0123456789,."));
+
         binding.inputDate.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) { }
@@ -138,7 +141,8 @@ public class TransactionFormActivity extends AppCompatActivity {
 
         binding.inputAmount.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
-                String formatted = formatAmount(binding.inputAmount.getText() == null ? "" : binding.inputAmount.getText().toString());
+                String current = binding.inputAmount.getText() == null ? "" : binding.inputAmount.getText().toString();
+                String formatted = formatAmount(current);
                 if (!formatted.isEmpty()) {
                     binding.inputAmount.setText(formatted);
                 }
@@ -359,11 +363,34 @@ public class TransactionFormActivity extends AppCompatActivity {
     }
 
     private double parseAmount(String amountText) {
-        String normalized = amountText.replace("R$", "")
-                .replace(" ", "")
-                .replace(".", "")
-                .replace(',', '.');
+        String normalized = normalizeAmount(amountText);
         return Double.parseDouble(normalized);
+    }
+
+    private String normalizeAmount(String amountText) {
+        String value = amountText == null ? "" : amountText;
+        value = value.replace("R$", "").replace(" ", "").trim();
+        if (value.isEmpty()) {
+            return "0";
+        }
+
+        int lastComma = value.lastIndexOf(',');
+        int lastDot = value.lastIndexOf('.');
+        int decimalIndex = Math.max(lastComma, lastDot);
+
+        if (decimalIndex >= 0) {
+            String integerPart = value.substring(0, decimalIndex).replaceAll("[.,]", "");
+            String decimalPart = value.substring(decimalIndex + 1).replaceAll("[.,]", "");
+            if (integerPart.isEmpty()) {
+                integerPart = "0";
+            }
+            if (decimalPart.isEmpty()) {
+                return integerPart;
+            }
+            return integerPart + "." + decimalPart;
+        }
+
+        return value.replaceAll("[.,]", "");
     }
 
     private String formatAmount(String raw) {
