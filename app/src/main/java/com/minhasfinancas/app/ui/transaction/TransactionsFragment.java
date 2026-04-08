@@ -145,6 +145,9 @@ public class TransactionsFragment extends Fragment {
         double expense = 0d;
 
         for (TransactionListItem item : monthItems) {
+            if (!"EXPENSE".equals(item.type) && !"INCOME".equals(item.type)) {
+                continue;
+            }
             if (!matchesStatus(item)) {
                 continue;
             }
@@ -164,9 +167,7 @@ public class TransactionsFragment extends Fragment {
             if (typeCompare != 0) {
                 return typeCompare;
             }
-            String firstLabel = displayLabel(first);
-            String secondLabel = displayLabel(second);
-            return firstLabel.compareToIgnoreCase(secondLabel);
+            return displayLabel(first).compareToIgnoreCase(displayLabel(second));
         });
 
         adapter.submitList(filtered);
@@ -177,13 +178,7 @@ public class TransactionsFragment extends Fragment {
     }
 
     private int typeOrder(String type) {
-        if ("EXPENSE".equals(type)) {
-            return 0;
-        }
-        if ("INCOME".equals(type)) {
-            return 1;
-        }
-        return 2;
+        return "EXPENSE".equals(type) ? 0 : 1;
     }
 
     private String displayLabel(TransactionListItem item) {
@@ -207,20 +202,26 @@ public class TransactionsFragment extends Fragment {
     }
 
     private void showQuickStatusMenu(TransactionListItem item, View anchor) {
-        if ("PAID".equals(item.status)) {
-            Toast.makeText(requireContext(), labelAlreadyDone(item.type), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         PopupMenu popupMenu = new PopupMenu(requireContext(), anchor);
-        popupMenu.getMenu().add(labelQuickAction(item.type));
-        popupMenu.setOnMenuItemClickListener(menuItem -> {
-            FinanceRepository.getInstance(requireContext()).updateTransactionStatus(item.id, "PAID", DateUtils.todayIso(), () -> {
-                Toast.makeText(requireContext(), labelDone(item.type), Toast.LENGTH_SHORT).show();
-                loadMonth();
+        if ("PAID".equals(item.status)) {
+            popupMenu.getMenu().add(labelUndoAction(item.type));
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                FinanceRepository.getInstance(requireContext()).updateTransactionStatus(item.id, "PENDING", null, () -> {
+                    Toast.makeText(requireContext(), labelUndone(item.type), Toast.LENGTH_SHORT).show();
+                    loadMonth();
+                });
+                return true;
             });
-            return true;
-        });
+        } else {
+            popupMenu.getMenu().add(labelQuickAction(item.type));
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                FinanceRepository.getInstance(requireContext()).updateTransactionStatus(item.id, "PAID", DateUtils.todayIso(), () -> {
+                    Toast.makeText(requireContext(), labelDone(item.type), Toast.LENGTH_SHORT).show();
+                    loadMonth();
+                });
+                return true;
+            });
+        }
         popupMenu.show();
     }
 
@@ -266,33 +267,19 @@ public class TransactionsFragment extends Fragment {
     }
 
     private String labelQuickAction(String type) {
-        if ("INCOME".equals(type)) {
-            return "Marcar como recebido";
-        }
-        if ("TRANSFER".equals(type)) {
-            return "Concluir transferência";
-        }
-        return "Marcar como pago";
+        return "INCOME".equals(type) ? "Marcar como recebido" : "Marcar como pago";
     }
 
     private String labelDone(String type) {
-        if ("INCOME".equals(type)) {
-            return "Receita marcada como recebida.";
-        }
-        if ("TRANSFER".equals(type)) {
-            return "Transferência concluída.";
-        }
-        return "Despesa marcada como paga.";
+        return "INCOME".equals(type) ? "Receita marcada como recebida." : "Despesa marcada como paga.";
     }
 
-    private String labelAlreadyDone(String type) {
-        if ("INCOME".equals(type)) {
-            return "Esta receita já foi recebida.";
-        }
-        if ("TRANSFER".equals(type)) {
-            return "Esta transferência já está concluída.";
-        }
-        return "Esta despesa já foi paga.";
+    private String labelUndoAction(String type) {
+        return "INCOME".equals(type) ? "Excluir recebimento" : "Excluir pagamento";
+    }
+
+    private String labelUndone(String type) {
+        return "INCOME".equals(type) ? "Recebimento removido." : "Pagamento removido.";
     }
 
     private void updateFilterIndicator() {
@@ -321,11 +308,7 @@ public class TransactionsFragment extends Fragment {
     }
 
     private boolean matchesQuery(TransactionListItem item, String query) {
-        return contains(item.description, query)
-                || contains(item.title, query)
-                || contains(item.accountName, query)
-                || contains(item.destinationAccountName, query)
-                || contains(item.categoryName, query);
+        return contains(item.description, query) || contains(item.title, query);
     }
 
     private boolean contains(String value, String query) {

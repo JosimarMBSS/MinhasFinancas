@@ -1,8 +1,7 @@
 <resources>
     <string name="app_name">Minhas Finanças</string>
     <string name="menu_transactions">Lançamentos</string>
-    <string name="menu_accounts">Contas</string>
-    <string name="menu_categories">Categorias</string>
     <string name="menu_reports">Relatórios</string>
+    <string name="menu_about">Sobre</string>
     <string name="action_add">Adicionar</string>
 </resources>

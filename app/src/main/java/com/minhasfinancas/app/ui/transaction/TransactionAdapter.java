@@ -84,18 +84,18 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             binding.textTitle.setText(item.description != null && !item.description.isEmpty() ? item.description : item.title);
             binding.textAmount.setText(formattedAmount(item));
             binding.textAmount.setTextColor(Color.parseColor(colorForType(item.type)));
-
+            binding.textStatus.setText(statusLabel(item));
             binding.textBadge.setText(letterForType(item.type));
             binding.textBadge.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorForType(item.type))));
 
             boolean isPaid = "PAID".equals(item.status);
-            binding.cardContent.setCardBackgroundColor(Color.parseColor(isPaid ? paidBackgroundForType(item.type) : "#FFFFFF"));
-            binding.cardContent.setStrokeColor(Color.parseColor(isPaid ? paidStrokeForType(item.type) : "#D8E1E8"));
+            binding.cardContent.setCardBackgroundColor(Color.parseColor(isPaid ? "#EEF8F0" : "#FFFFFF"));
+            binding.cardContent.setStrokeColor(Color.parseColor(isPaid ? "#C8E6CF" : "#D8E1E8"));
 
             boolean expanded = inlineActions && item.id == expandedItemId;
             binding.layoutActions.setVisibility(inlineActions ? View.VISIBLE : View.GONE);
             binding.layoutActions.setAlpha(expanded ? 1f : 0f);
-            binding.cardContent.setTranslationX(expanded ? -dp(104) : 0f);
+            binding.cardContent.setTranslationX(expanded ? -dp(118) : 0f);
 
             binding.cardContent.setOnClickListener(v -> {
                 if (!inlineActions) {
@@ -137,32 +137,23 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         return RecyclerView.NO_POSITION;
     }
 
-    private String paidBackgroundForType(String type) {
-        if ("TRANSFER".equals(type)) return "#EEF4FF";
-        if ("INCOME".equals(type)) return "#ECFDF3";
-        return "#FFF1F3";
-    }
-
-    private String paidStrokeForType(String type) {
-        if ("TRANSFER".equals(type)) return "#BFD3FF";
-        if ("INCOME".equals(type)) return "#B7E4C7";
-        return "#F6C4CD";
-    }
-
     private String formattedAmount(TransactionListItem item) {
-        String prefix = "INCOME".equals(item.type) ? "+ " : "EXPENSE".equals(item.type) ? "- " : "↔ ";
+        String prefix = "INCOME".equals(item.type) ? "+ " : "- ";
         return prefix + DateUtils.currency(item.amount);
     }
 
+    private String statusLabel(TransactionListItem item) {
+        if ("INCOME".equals(item.type)) {
+            return "PAID".equals(item.status) ? "Recebido" : "A receber";
+        }
+        return "PAID".equals(item.status) ? "Pago" : "A pagar";
+    }
+
     private String letterForType(String type) {
-        if ("INCOME".equals(type)) return "R";
-        if ("TRANSFER".equals(type)) return "T";
-        return "D";
+        return "INCOME".equals(type) ? "R" : "D";
     }
 
     private String colorForType(String type) {
-        if ("INCOME".equals(type)) return "#198754";
-        if ("TRANSFER".equals(type)) return "#2F6DF6";
-        return "#D9485F";
+        return "INCOME".equals(type) ? "#198754" : "#D9485F";
     }
 }

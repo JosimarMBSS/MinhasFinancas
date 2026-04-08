@@ -161,6 +161,28 @@ public class FinanceRepository {
         });
     }
 
+    public void getOrCreateBaseCategoryId(String type, DataCallback<Long> callback) {
+        io.execute(() -> {
+            SQLiteDatabase writable = db.getWritableDatabase();
+            String wantedName = "INCOME".equals(type) ? "Receitas" : "Despesas";
+            CategoryEntity existing = queryCategoryByName(wantedName);
+            if (existing != null) {
+                post(callback, existing.id);
+                return;
+            }
+            ContentValues values = new ContentValues();
+            values.put("name", wantedName);
+            values.put("type", type);
+            values.put("color_hex", "INCOME".equals(type) ? "#198754" : "#D9485F");
+            values.put("icon_name", "INCOME".equals(type) ? "payments" : "receipt_long");
+            values.put("is_default", 1);
+            values.put("is_active", 1);
+            values.put("created_at", System.currentTimeMillis());
+            long id = writable.insert("categories", null, values);
+            post(callback, id);
+        });
+    }
+
     public void getTransactions(DataCallback<List<TransactionListItem>> callback) {
         io.execute(() -> post(callback, queryAllTransactions()));
     }
@@ -177,8 +199,22 @@ public class FinanceRepository {
                 if (filter.type != null && !filter.type.isEmpty() && !"ALL".equals(filter.type) && !filter.type.equals(item.type)) {
                     continue;
                 }
-                if (filter.status != null && !filter.status.isEmpty() && !"ALL".equals(filter.status) && !filter.status.equals(item.status)) {
-                    continue;
+                if (filter.status != null && !filter.status.isEmpty() && !"ALL".equals(filter.status)) {
+                    if ("EXPENSE_PAID".equals(filter.status) && !("EXPENSE".equals(item.type) && "PAID".equals(item.status))) {
+                        continue;
+                    }
+                    if ("EXPENSE_PENDING".equals(filter.status) && !("EXPENSE".equals(item.type) && "PENDING".equals(item.status))) {
+                        continue;
+                    }
+                    if ("INCOME_PAID".equals(filter.status) && !("INCOME".equals(item.type) && "PAID".equals(item.status))) {
+                        continue;
+                    }
+                    if ("INCOME_PENDING".equals(filter.status) && !("INCOME".equals(item.type) && "PENDING".equals(item.status))) {
+                        continue;
+                    }
+                    if (!filter.status.startsWith("EXPENSE_") && !filter.status.startsWith("INCOME_") && !filter.status.equals(item.status)) {
+                        continue;
+                    }
                 }
                 if (filter.categoryName != null && !filter.categoryName.isEmpty() && !"Todas".equals(filter.categoryName) && !filter.categoryName.equals(item.categoryName)) {
                     continue;

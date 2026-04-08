@@ -15,12 +15,8 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.navigation.NavigationBarView;
 import com.minhasfinancas.app.R;
 import com.minhasfinancas.app.databinding.ActivityMainBinding;
-import com.minhasfinancas.app.ui.account.AccountFormActivity;
-import com.minhasfinancas.app.ui.account.AccountsFragment;
-import com.minhasfinancas.app.ui.category.CategoriesFragment;
-import com.minhasfinancas.app.ui.category.CategoryFormActivity;
+import com.minhasfinancas.app.ui.about.AboutFragment;
 import com.minhasfinancas.app.ui.reports.ReportsFragment;
-import com.minhasfinancas.app.ui.settings.SettingsActivity;
 import com.minhasfinancas.app.ui.settings.SettingsInfoActivity;
 import com.minhasfinancas.app.ui.transaction.TransactionFormActivity;
 import com.minhasfinancas.app.ui.transaction.TransactionsFragment;
@@ -47,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         DatabaseSeeder.seed(this);
 
         binding.bottomNav.setOnItemSelectedListener(this);
-        binding.fabAdd.setOnClickListener(v -> handleAddAction());
+        binding.fabAdd.setOnClickListener(v -> startActivity(new Intent(this, TransactionFormActivity.class)));
 
         if (savedInstanceState == null) {
             binding.bottomNav.setSelectedItemId(R.id.nav_transactions);
@@ -68,6 +64,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         if (addItem != null) {
             addItem.setVisible(false);
         }
+        MenuItem settingsItem = menu.findItem(R.id.action_settings);
+        if (settingsItem != null) {
+            settingsItem.setVisible(false);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -75,10 +75,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_about) {
             startActivity(new Intent(this, SettingsInfoActivity.class));
-            return true;
-        }
-        if (item.getItemId() == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -91,15 +87,12 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         Fragment fragment;
         CharSequence title;
 
-        if (item.getItemId() == R.id.nav_accounts) {
-            fragment = new AccountsFragment();
-            title = getString(R.string.menu_accounts);
-        } else if (item.getItemId() == R.id.nav_categories) {
-            fragment = new CategoriesFragment();
-            title = getString(R.string.menu_categories);
-        } else if (item.getItemId() == R.id.nav_reports) {
+        if (item.getItemId() == R.id.nav_reports) {
             fragment = new ReportsFragment();
             title = getString(R.string.menu_reports);
+        } else if (item.getItemId() == R.id.nav_about) {
+            fragment = new AboutFragment();
+            title = getString(R.string.menu_about);
         } else {
             fragment = new TransactionsFragment();
             title = getString(R.string.menu_transactions);
@@ -116,16 +109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBarView
         if (binding == null) {
             return;
         }
-        binding.fabAdd.setVisibility(currentMenuId == R.id.nav_reports ? View.GONE : View.VISIBLE);
-    }
-
-    private void handleAddAction() {
-        if (currentMenuId == R.id.nav_transactions) {
-            startActivity(new Intent(this, TransactionFormActivity.class));
-        } else if (currentMenuId == R.id.nav_accounts) {
-            startActivity(new Intent(this, AccountFormActivity.class));
-        } else if (currentMenuId == R.id.nav_categories) {
-            startActivity(new Intent(this, CategoryFormActivity.class));
-        }
+        binding.fabAdd.setVisibility(currentMenuId == R.id.nav_transactions ? View.VISIBLE : View.GONE);
     }
 }
