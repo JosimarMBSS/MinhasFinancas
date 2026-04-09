@@ -3,25 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp">
+    android:layout_marginBottom="6dp">
 
     <LinearLayout
         android:id="@+id/layout_actions"
-        android:layout_width="152dp"
+        android:layout_width="160dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:background="@drawable/bg_action_panel"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="10dp">
 
         <ImageButton
             android:id="@+id/button_edit"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@color/action_edit_bg"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_icon_action"
             android:contentDescription="Editar"
-            android:padding="8dp"
+            android:padding="10dp"
             android:src="@android:drawable/ic_menu_edit"
             android:tint="@color/md_theme_primary" />
 
@@ -31,11 +31,11 @@
 
         <ImageButton
             android:id="@+id/button_delete"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="@color/action_delete_bg"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_icon_action"
             android:contentDescription="Excluir"
-            android:padding="8dp"
+            android:padding="10dp"
             android:src="@android:drawable/ic_menu_delete"
             android:tint="@color/expense_red" />
     </LinearLayout>
@@ -45,7 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/row_surface"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp"
         app:strokeColor="@color/pending_card_stroke"
         app:strokeWidth="1dp">
 
@@ -53,17 +54,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:minHeight="52dp"
+            android:minHeight="70dp"
             android:orientation="horizontal"
-            android:paddingStart="10dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="6dp">
+            android:paddingStart="0dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="10dp">
+
+            <View
+                android:id="@+id/view_accent"
+                android:layout_width="5dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/expense_red" />
 
             <TextView
                 android:id="@+id/text_badge"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
                 android:background="@drawable/bg_circle_badge"
                 android:gravity="center"
                 android:text="D"
@@ -84,35 +93,51 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="@color/md_theme_onSurface"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/text_subtitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp"
+                    android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
                     android:textColor="@color/row_subtle_text" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/text_amount"
-                android:layout_width="100dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:gravity="end"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                android:textStyle="bold" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/text_status"
-                android:layout_width="82dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
-                android:textColor="@color/totals_label" />
+                <TextView
+                    android:id="@+id/text_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_status_chip"
+                    android:gravity="center"
+                    android:minWidth="70dp"
+                    android:paddingStart="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="3dp"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                    android:textColor="@color/chip_text" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

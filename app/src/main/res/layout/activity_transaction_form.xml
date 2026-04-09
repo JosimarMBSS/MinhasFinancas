@@ -29,9 +29,9 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/month_selector_bg"
+                app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="24dp"
-                app:strokeColor="@color/month_selector_stroke"
+                app:strokeColor="@color/md_theme_outline"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:text="Tipo do lançamento"
                         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                        android:textColor="@color/month_selector_text"
+                        android:textColor="@color/md_theme_onSurface"
                         android:textStyle="bold" />
 
                     <com.google.android.material.button.MaterialButtonToggleGroup
@@ -136,7 +136,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:digits="0123456789,."
-                                android:inputType="numberDecimal"
+                                android:inputType="text"
                                 android:maxLines="1" />
                         </com.google.android.material.textfield.TextInputLayout>
 

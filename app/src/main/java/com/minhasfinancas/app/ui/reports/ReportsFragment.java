@@ -192,7 +192,7 @@ public class ReportsFragment extends Fragment {
                 binding.textIncomeTotal.setText(DateUtils.currency(summary.income));
                 binding.textExpenseTotal.setText(DateUtils.currency(summary.expense));
                 binding.textBalanceTotal.setText("Saldo: " + DateUtils.currency(summary.getBalance()));
-                binding.textBalanceTotal.setTextColor(Color.parseColor(summary.getBalance() >= 0 ? "#198754" : "#D9485F"));
+                binding.textBalanceTotal.setTextColor(Color.parseColor(summary.getBalance() >= 0 ? "#17A46A" : "#E05C75"));
             });
         });
     }
@@ -230,7 +230,7 @@ public class ReportsFragment extends Fragment {
         PdfDocument document = new PdfDocument();
 
         Paint headerBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        headerBgPaint.setColor(Color.parseColor("#0B5D56"));
+        headerBgPaint.setColor(Color.parseColor("#0B3153"));
 
         Paint titlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         titlePaint.setColor(Color.WHITE);
@@ -238,33 +238,33 @@ public class ReportsFragment extends Fragment {
         titlePaint.setFakeBoldText(true);
 
         Paint headerMetaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        headerMetaPaint.setColor(Color.parseColor("#D9F5EE"));
+        headerMetaPaint.setColor(Color.parseColor("#B7F2FB"));
         headerMetaPaint.setTextSize(11f);
 
         Paint sectionTitlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        sectionTitlePaint.setColor(Color.parseColor("#0B5D56"));
+        sectionTitlePaint.setColor(Color.parseColor("#0B3153"));
         sectionTitlePaint.setTextSize(12f);
         sectionTitlePaint.setFakeBoldText(true);
 
         Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        textPaint.setColor(Color.parseColor("#1F2933"));
+        textPaint.setColor(Color.parseColor("#11324A"));
         textPaint.setTextSize(11f);
 
         Paint mutedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mutedPaint.setColor(Color.parseColor("#5C6B77"));
+        mutedPaint.setColor(Color.parseColor("#6F8699"));
         mutedPaint.setTextSize(10f);
 
         Paint dashedLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        dashedLinePaint.setColor(Color.parseColor("#B9C5CF"));
+        dashedLinePaint.setColor(Color.parseColor("#C7D9E5"));
         dashedLinePaint.setStrokeWidth(1f);
         dashedLinePaint.setPathEffect(new DashPathEffect(new float[]{6f, 5f}, 0f));
 
         Paint solidLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        solidLinePaint.setColor(Color.parseColor("#D6E1E8"));
+        solidLinePaint.setColor(Color.parseColor("#D7E6EF"));
         solidLinePaint.setStrokeWidth(1.4f);
 
         Paint totalsBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        totalsBgPaint.setColor(Color.parseColor("#F1F7F6"));
+        totalsBgPaint.setColor(Color.parseColor("#E9F8FC"));
 
         int pageWidth = 595;
         int pageHeight = 842;
@@ -318,13 +318,13 @@ public class ReportsFragment extends Fragment {
 
         canvas.drawRect(20, y, 575, y + 82, headerBgPaint);
         canvas.drawText("Minhas Finanças", 36, y + 28, titlePaint);
-        canvas.drawText("Relatório resumido", 36, y + 48, headerMetaPaint);
+        canvas.drawText("Resumo financeiro filtrado", 36, y + 48, headerMetaPaint);
         canvas.drawText("Período: " + textOf(binding.inputStartDate.getText()) + " até " + textOf(binding.inputEndDate.getText()), 36, y + 66, headerMetaPaint);
         canvas.drawText("Tipo: " + typeLabel() + "  •  Situação: " + statusLabel(), 320, y + 66, headerMetaPaint);
 
         y += 100;
         canvas.drawRect(20, y, 575, y + 54, totalsBgPaint);
-        canvas.drawText("Resumo parcial", 32, y + 18, sectionTitlePaint);
+        canvas.drawText("Resumo dos totais", 32, y + 18, sectionTitlePaint);
         canvas.drawText("Receitas: " + DateUtils.currency(currentSummary.income), 32, y + 40, textPaint);
         canvas.drawText("Despesas: " + DateUtils.currency(currentSummary.expense), 230, y + 40, textPaint);
         canvas.drawText("Saldo: " + DateUtils.currency(currentSummary.getBalance()), 430, y + 40, textPaint);

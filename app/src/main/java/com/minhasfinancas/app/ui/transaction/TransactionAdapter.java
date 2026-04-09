@@ -86,17 +86,20 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             binding.textAmount.setText(formattedAmount(item));
             binding.textAmount.setTextColor(Color.parseColor(colorForType(item.type)));
             binding.textStatus.setText(statusLabel(item));
+            binding.textStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(statusBg(item))));
+            binding.textStatus.setTextColor(Color.parseColor(statusText(item)));
             binding.textBadge.setText(letterForType(item.type));
             binding.textBadge.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorForType(item.type))));
+            binding.viewAccent.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(colorForType(item.type))));
 
             boolean isPaid = "PAID".equals(item.status);
-            binding.cardContent.setCardBackgroundColor(Color.parseColor(isPaid ? "#F0FAF3" : "#FFFFFF"));
-            binding.cardContent.setStrokeColor(Color.parseColor(isPaid ? "#C6E5D0" : "#D8E1E8"));
+            binding.cardContent.setCardBackgroundColor(Color.parseColor(isPaid ? "#EEF8F1" : "#FFFFFF"));
+            binding.cardContent.setStrokeColor(Color.parseColor(isPaid ? "#CCE8D4" : "#DAE7ED"));
 
             boolean expanded = inlineActions && item.id == expandedItemId;
             binding.layoutActions.setVisibility(inlineActions ? View.VISIBLE : View.GONE);
             binding.layoutActions.setAlpha(expanded ? 1f : 0f);
-            binding.cardContent.setTranslationX(expanded ? -dp(138) : 0f);
+            binding.cardContent.setTranslationX(expanded ? -dp(144) : 0f);
 
             binding.cardContent.setOnClickListener(v -> {
                 if (!inlineActions) {
@@ -150,11 +153,25 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         return "PAID".equals(item.status) ? "Pago" : "A pagar";
     }
 
+    private String statusBg(TransactionListItem item) {
+        if ("PAID".equals(item.status)) {
+            return "#DBF3E4";
+        }
+        return "#E8FAFD";
+    }
+
+    private String statusText(TransactionListItem item) {
+        if ("PAID".equals(item.status)) {
+            return "#156B44";
+        }
+        return "#0C3B49";
+    }
+
     private String letterForType(String type) {
         return "INCOME".equals(type) ? "R" : "D";
     }
 
     private String colorForType(String type) {
-        return "INCOME".equals(type) ? "#198754" : "#D9485F";
+        return "INCOME".equals(type) ? "#1E9E64" : "#DB5A73";
     }
 }
