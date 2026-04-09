@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/report_header_bg"
         app:cardCornerRadius="24dp"
-        app:strokeColor="@color/totals_card_stroke"
+        app:strokeColor="@color/report_filter_border"
         app:strokeWidth="1dp">
 
         <LinearLayout
@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Data inicial"
-                    app:boxStrokeColor="@color/totals_card_stroke">
+                    app:boxStrokeColor="@color/report_filter_border">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/input_start_date"
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Data final"
-                    app:boxStrokeColor="@color/totals_card_stroke">
+                    app:boxStrokeColor="@color/report_filter_border">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/input_end_date"
@@ -232,11 +232,17 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_generate_pdf"
             style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="12dp"
             android:contentDescription="Compartilhar PDF"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:minWidth="0dp"
             app:backgroundTint="@color/report_share_bg"
             app:icon="@android:drawable/ic_menu_share"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
             app:iconTint="@color/report_share_icon" />
     </LinearLayout>
 

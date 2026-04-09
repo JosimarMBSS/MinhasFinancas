@@ -96,7 +96,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             boolean expanded = inlineActions && item.id == expandedItemId;
             binding.layoutActions.setVisibility(inlineActions ? View.VISIBLE : View.GONE);
             binding.layoutActions.setAlpha(expanded ? 1f : 0f);
-            binding.cardContent.setTranslationX(expanded ? -dp(130) : 0f);
+            binding.cardContent.setTranslationX(expanded ? -dp(138) : 0f);
 
             binding.cardContent.setOnClickListener(v -> {
                 if (!inlineActions) {

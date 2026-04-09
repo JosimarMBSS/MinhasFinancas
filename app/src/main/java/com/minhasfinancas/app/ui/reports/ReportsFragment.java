@@ -3,6 +3,7 @@ package com.minhasfinancas.app.ui.reports;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
 import android.net.Uri;
@@ -227,45 +228,76 @@ public class ReportsFragment extends Fragment {
 
     private void createPdf(File outputFile) throws Exception {
         PdfDocument document = new PdfDocument();
-        Paint titlePaint = new Paint();
-        titlePaint.setTextSize(18f);
+
+        Paint headerBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        headerBgPaint.setColor(Color.parseColor("#0B5D56"));
+
+        Paint titlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        titlePaint.setColor(Color.WHITE);
+        titlePaint.setTextSize(19f);
         titlePaint.setFakeBoldText(true);
 
-        Paint subtitlePaint = new Paint();
-        subtitlePaint.setTextSize(12f);
+        Paint headerMetaPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        headerMetaPaint.setColor(Color.parseColor("#D9F5EE"));
+        headerMetaPaint.setTextSize(11f);
 
-        Paint textPaint = new Paint();
+        Paint sectionTitlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        sectionTitlePaint.setColor(Color.parseColor("#0B5D56"));
+        sectionTitlePaint.setTextSize(12f);
+        sectionTitlePaint.setFakeBoldText(true);
+
+        Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        textPaint.setColor(Color.parseColor("#1F2933"));
         textPaint.setTextSize(11f);
 
-        Paint linePaint = new Paint();
-        linePaint.setStrokeWidth(1f);
+        Paint mutedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mutedPaint.setColor(Color.parseColor("#5C6B77"));
+        mutedPaint.setTextSize(10f);
+
+        Paint dashedLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        dashedLinePaint.setColor(Color.parseColor("#B9C5CF"));
+        dashedLinePaint.setStrokeWidth(1f);
+        dashedLinePaint.setPathEffect(new DashPathEffect(new float[]{6f, 5f}, 0f));
+
+        Paint solidLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        solidLinePaint.setColor(Color.parseColor("#D6E1E8"));
+        solidLinePaint.setStrokeWidth(1.4f);
+
+        Paint totalsBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        totalsBgPaint.setColor(Color.parseColor("#F1F7F6"));
 
         int pageWidth = 595;
         int pageHeight = 842;
         int pageNumber = 1;
-        int y = 40;
+        int y = 28;
 
         PdfDocument.Page page = document.startPage(new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber).create());
         android.graphics.Canvas canvas = page.getCanvas();
 
-        y = drawHeader(canvas, titlePaint, subtitlePaint, textPaint, linePaint, y);
+        y = drawHeader(canvas, headerBgPaint, titlePaint, headerMetaPaint, sectionTitlePaint, textPaint, solidLinePaint, totalsBgPaint, y);
 
         for (TransactionListItem item : currentItems) {
-            if (y > pageHeight - 60) {
+            if (y > pageHeight - 140) {
                 document.finishPage(page);
                 pageNumber++;
                 page = document.startPage(new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber).create());
                 canvas = page.getCanvas();
-                y = drawHeader(canvas, titlePaint, subtitlePaint, textPaint, linePaint, 40);
+                y = drawHeader(canvas, headerBgPaint, titlePaint, headerMetaPaint, sectionTitlePaint, textPaint, solidLinePaint, totalsBgPaint, 28);
             }
-            String description = item.description != null && !item.description.trim().isEmpty() ? item.description : item.title;
-            canvas.drawText(trim(description, 34), 24, y, textPaint);
-            canvas.drawText(("INCOME".equals(item.type) ? "+ " : "- ") + DateUtils.currency(item.amount), 320, y, textPaint);
-            canvas.drawText(reportStatus(item), 470, y, textPaint);
-            y += 20;
+            y = drawItemRow(canvas, item, textPaint, mutedPaint, dashedLinePaint, y);
         }
 
+        if (y > pageHeight - 120) {
+            document.finishPage(page);
+            pageNumber++;
+            page = document.startPage(new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber).create());
+            canvas = page.getCanvas();
+            y = 40;
+        }
+
+        drawFooterTotals(canvas, sectionTitlePaint, textPaint, solidLinePaint, totalsBgPaint, y + 12);
         document.finishPage(page);
+
         try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
             document.writeTo(outputStream);
         } finally {
@@ -273,26 +305,70 @@ public class ReportsFragment extends Fragment {
         }
     }
 
-    private int drawHeader(android.graphics.Canvas canvas, Paint titlePaint, Paint subtitlePaint, Paint textPaint, Paint linePaint, int startY) {
+    private int drawHeader(android.graphics.Canvas canvas,
+                           Paint headerBgPaint,
+                           Paint titlePaint,
+                           Paint headerMetaPaint,
+                           Paint sectionTitlePaint,
+                           Paint textPaint,
+                           Paint solidLinePaint,
+                           Paint totalsBgPaint,
+                           int startY) {
         int y = startY;
-        canvas.drawText("Relatório - Minhas Finanças", 24, y, titlePaint);
-        y += 20;
-        canvas.drawText("Período: " + textOf(binding.inputStartDate.getText()) + " até " + textOf(binding.inputEndDate.getText()), 24, y, subtitlePaint);
-        y += 18;
-        canvas.drawText("Tipo: " + typeLabel() + " | Situação: " + statusLabel(), 24, y, subtitlePaint);
-        y += 24;
-        canvas.drawText("Resumo de totais", 24, y, subtitlePaint);
-        y += 18;
-        canvas.drawText("Receitas: " + DateUtils.currency(currentSummary.income), 24, y, textPaint);
-        canvas.drawText("Despesas: " + DateUtils.currency(currentSummary.expense), 220, y, textPaint);
-        canvas.drawText("Saldo: " + DateUtils.currency(currentSummary.getBalance()), 420, y, textPaint);
-        y += 24;
-        canvas.drawText("Descrição", 24, y, textPaint);
-        canvas.drawText("Valor", 320, y, textPaint);
-        canvas.drawText("Situação", 470, y, textPaint);
-        y += 6;
-        canvas.drawLine(24, y, 560, y, linePaint);
+
+        canvas.drawRect(20, y, 575, y + 82, headerBgPaint);
+        canvas.drawText("Minhas Finanças", 36, y + 28, titlePaint);
+        canvas.drawText("Relatório resumido", 36, y + 48, headerMetaPaint);
+        canvas.drawText("Período: " + textOf(binding.inputStartDate.getText()) + " até " + textOf(binding.inputEndDate.getText()), 36, y + 66, headerMetaPaint);
+        canvas.drawText("Tipo: " + typeLabel() + "  •  Situação: " + statusLabel(), 320, y + 66, headerMetaPaint);
+
+        y += 100;
+        canvas.drawRect(20, y, 575, y + 54, totalsBgPaint);
+        canvas.drawText("Resumo parcial", 32, y + 18, sectionTitlePaint);
+        canvas.drawText("Receitas: " + DateUtils.currency(currentSummary.income), 32, y + 40, textPaint);
+        canvas.drawText("Despesas: " + DateUtils.currency(currentSummary.expense), 230, y + 40, textPaint);
+        canvas.drawText("Saldo: " + DateUtils.currency(currentSummary.getBalance()), 430, y + 40, textPaint);
+
+        y += 72;
+        canvas.drawText("Descrição", 24, y, sectionTitlePaint);
+        canvas.drawText("Valor", 340, y, sectionTitlePaint);
+        canvas.drawText("Situação", 462, y, sectionTitlePaint);
+        y += 8;
+        canvas.drawLine(24, y, 560, y, solidLinePaint);
         return y + 16;
+    }
+
+    private int drawItemRow(android.graphics.Canvas canvas,
+                            TransactionListItem item,
+                            Paint textPaint,
+                            Paint mutedPaint,
+                            Paint dashedLinePaint,
+                            int y) {
+        String description = item.description != null && !item.description.trim().isEmpty() ? item.description : item.title;
+        String amount = ("INCOME".equals(item.type) ? "+ " : "- ") + DateUtils.currency(item.amount);
+
+        canvas.drawText(trim(description, 36), 24, y, textPaint);
+        canvas.drawText(amount, 340, y, textPaint);
+        canvas.drawText(reportStatus(item), 462, y, textPaint);
+        y += 14;
+        canvas.drawText(DateUtils.isoToDisplay(item.transactionDate), 24, y, mutedPaint);
+        y += 8;
+        canvas.drawLine(24, y, 560, y, dashedLinePaint);
+        return y + 16;
+    }
+
+    private void drawFooterTotals(android.graphics.Canvas canvas,
+                                  Paint sectionTitlePaint,
+                                  Paint textPaint,
+                                  Paint solidLinePaint,
+                                  Paint totalsBgPaint,
+                                  int top) {
+        canvas.drawRect(20, top, 575, top + 74, totalsBgPaint);
+        canvas.drawText("Totais finais", 32, top + 20, sectionTitlePaint);
+        canvas.drawText("Total receitas: " + DateUtils.currency(currentSummary.income), 32, top + 44, textPaint);
+        canvas.drawText("Total despesas: " + DateUtils.currency(currentSummary.expense), 230, top + 44, textPaint);
+        canvas.drawText("Saldo final: " + DateUtils.currency(currentSummary.getBalance()), 420, top + 44, textPaint);
+        canvas.drawLine(20, top - 10, 575, top - 10, solidLinePaint);
     }
 
     private String trim(String text, int max) {

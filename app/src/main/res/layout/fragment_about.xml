@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="@color/about_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,9 +15,61 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/month_selector_bg"
-            app:cardCornerRadius="24dp"
+            app:cardBackgroundColor="@color/about_brand_bg"
+            app:cardCornerRadius="28dp"
             app:strokeColor="@color/month_selector_stroke"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <ImageView
+                    android:id="@+id/image_brand"
+                    android:layout_width="190dp"
+                    android:layout_height="190dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="Marca JFSoft"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/jfsoft_logo_about" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Minhas Finanças"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="#D9F5EE" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:text="Controle financeiro pessoal com foco em lançamentos rápidos, relatórios claros e compartilhamento de resumo em PDF."
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardCornerRadius="24dp"
+            app:strokeColor="@color/md_theme_outline"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -28,32 +81,24 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Minhas Finanças"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    android:text="Desenvolvedor"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Josimar Ferreira Soares"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
                     android:textColor="@color/month_selector_text"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/text_version"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                    android:textColor="@color/month_selector_text" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Controle financeiro simples, focado em lançamentos, relatórios e exportação dos seus dados."
-                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                    android:textColor="@color/md_theme_onSurface" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:text="Desenvolvedor: Josimar Ferreira Soares"
+                    android:text="JFSoft Inovação e Tecnologia"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="@color/totals_label" />
             </LinearLayout>
@@ -76,16 +121,25 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Dados"
+                    android:text="Backup dos dados"
                     android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Exporte ou importe sua base local para manter uma cópia de segurança."
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="@color/totals_label" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_export_data"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:text="Exportar dados" />
+                    android:text="Exportar dados"
+                    app:icon="@android:drawable/stat_sys_upload_done" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_import_data"
@@ -93,7 +147,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="Importar dados" />
+                    android:text="Importar dados"
+                    app:icon="@android:drawable/stat_sys_download_done" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
